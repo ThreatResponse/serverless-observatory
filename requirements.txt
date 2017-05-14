@@ -1,0 +1,11 @@
+credstash
+watchtower
+zappa
+flask
+boto3
+flask_assets
+Jinja2
+flask-pyoidc
+jsmin
+cssmin
+pytest-flask

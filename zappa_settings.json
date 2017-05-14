@@ -1,0 +1,23 @@
+{
+    "dev": {
+        "project_name": "observatory",
+        "app_function": "app.app",
+        "aws_region": "us-east-1",
+        "profile_name": "default",
+        "s3_bucket": "serverless-observatory.east.threatresponse.cloud",
+        "certificate_arn": "arn:aws:acm:us-east-1:576309420438:certificate/155b7f56-c635-4b11-8d3b-c913fe17832a",
+        "domain": "serverless-observatory.threatresponse.cloud",
+        "environment_variables": {"environment": "production"},
+        "runtime": "python2.7",
+        "timeout_seconds": 120,
+        "extra_permissions": [{
+            "Effect": "Allow",
+            "Action": [
+              "dynamodb:Scan",
+              "dynamodb:Query",
+              "dynamodb:GetItem"
+            ],
+            "Resource": "arn:aws:dynamodb:*:*:table/credential-store"
+        }]
+    }
+}

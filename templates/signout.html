@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block appbar %}{% endblock %}
+
+{% block content_class %}logout{% endblock %}
+
+{% block content %}
+  <div class="mui-row">
+    <div class="mui-col-md-12 panel">
+      <div>
+        <img src="/static/img/logo.png" alt="serverless-observatory">
+      </div>
+
+      <div>
+        <img src="/static/img/success.svg" alt="sucess">
+      </div>
+
+      <div>
+        <h2>serverless-observatory</h2>
+        <h2>Log Out Success</h2>
+      </div>
+
+      <div class="notice">
+        Make sure you also log out of each individual application you used this session.
+      </div>
+
+      <hr>
+
+      <a href="/" class="mui-btn">Log In to serverless-observatory</a>
+    </div>
+  </div>
+
+  <div class="footer-links">
+    <div class="icon-container">
+      <div class="icon">
+        <img class="footer-icon" src="/static/img/github.svg">
+        <a target="_blank" href="https://github.com/threatresponse/serverless-observatory">Contribute</a>
+      </div>
+
+  </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
