@@ -1,6 +1,6 @@
 """ Governs crud operations around users and data. """
-import boto3
 import random
+import aws
 from hashids import Hashids
 
 
@@ -9,12 +9,7 @@ class User(object):
     def __init__(self, userinfo):
         self.user_id = userinfo['user_id']
         self.email = userinfo['email']
-        self.dynamo = self.connect_dynamo()
-
-    def connect_dynamo(self):
-        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-        table = dynamodb.Table('observatory_users')
-        return table
+        self.dynamo = aws.connect_dynamo(table_name='observatory_users')
 
     def rotate_api_key(self):
         """Updates users api by replacing."""
@@ -46,6 +41,25 @@ class User(object):
             search = self.__find_by_uid()
             return search['Item']
 
+    def find(self):
+        """
+        Search for a user in dynamo.
+        """
+        search = self.__find_by_uid()
+        print(search)
+        if 'Item' in search:
+            return search['Item']
+        else:
+            return None
+
+    def destroy(self):
+        """Remove a user. Don't use this outside tests.  Not atomic!"""
+        response = self.__delete_user()
+        if response is not None:
+            return True
+        else:
+            return False
+
     def __find_by_uid(self):
         response = self.dynamo.get_item(
             Key={
@@ -54,7 +68,8 @@ class User(object):
             AttributesToGet=[
                 'user_id',
                 'email',
-                'api_key'
+                'api_key',
+                'disabled'
             ]
         )
         return response
@@ -64,10 +79,20 @@ class User(object):
             Item={
                 'user_id': self.user_id,
                 'email': self.email,
-                'api_key': self.__generate_api_key()
+                'api_key': self.__generate_api_key(),
+                'disabled': False
 
             }
         )
+        return response
+
+    def __delete_user(self):
+        response = self.dynamo.delete_item(
+            Key={
+                'user_id': self.user_id
+            }
+        )
+        print response
         return response
 
     def __generate_api_key(self):

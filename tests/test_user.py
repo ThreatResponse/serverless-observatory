@@ -1,6 +1,5 @@
 import os
 import sys
-import random
 from faker import Factory
 
 
@@ -23,6 +22,7 @@ MOCK_NEW_USER = {
 def test_object_init():
     u = user.User(MOCK_PROFILE)
     result = u.find_or_create_by()
+    u.destroy()
     assert result is not None
     assert u is not None
 
@@ -30,6 +30,7 @@ def test_object_init():
 def test_user_creation():
     u = user.User(MOCK_NEW_USER)
     result = u.find_or_create_by()
+    u.destroy()
     assert result is not None
     assert u is not None
 
@@ -41,4 +42,5 @@ def test_api_key_rotation():
     u.rotate_api_key()
     new_result = u.find_or_create_by()
     new_api_key = new_result['api_key']
+    u.destroy()
     assert old_api_key is not new_api_key

@@ -1,3 +1,4 @@
+hashids
 credstash
 watchtower
 zappa
@@ -9,3 +10,4 @@ flask-pyoidc
 jsmin
 cssmin
 pytest-flask
+faker

@@ -34,7 +34,15 @@ logging.getLogger("werkzeug").addHandler(handler)
 
 @app.route('/')
 @oidc.oidc_auth
-def home():
+def index():
+    return render_template(
+        'home.html'
+    )
+
+
+@app.route('/dashboard')
+@oidc.oidc_auth
+def dashboard():
     return render_template(
         'home.html'
     )
