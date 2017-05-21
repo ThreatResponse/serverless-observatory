@@ -32,7 +32,10 @@ class Grade(object):
         total_score = self._total_score(scored_test)
 
         # Round up score to the nearest multiplier of 5
-        total_score = int(round(total_score / 5.0) * 5.0)
+        if total_score > 0:
+            total_score = int(round(total_score / 5.0) * 5.0)
+        else:
+            total_score = 0
 
         # Score against the above grade chart
         grade = self.grade_chart[total_score]
@@ -46,7 +49,7 @@ class Grade(object):
         possible_points = 0
 
         for k, v in scored_test.iteritems():
-            if k is not 'uuid':
+            if 'check' in k:
                 score = score + v['score']
                 possible_points = possible_points + v['score_possible']
 

@@ -103,7 +103,10 @@ def signout():
 @app.route('/scan/<string:uuid>')
 @oidc.oidc_auth
 def get_scan(uuid):
-    pass
+    u = user.User(session['userinfo'])
+    s = user.Scan(u).find_score_by_key(uuid)
+    g = grade.Grade().get_grade(s)
+    return render_template('report.html', user=u, score=s, grade=g)
 
 
 @app.route('/scan/<string:uuid>/delete')
@@ -112,6 +115,8 @@ def delete_scan(uuid):
     u = user.User(session['userinfo'])
     p = api.Profiler(api_key=u.api_key)
     p.destroy_profile(uuid)
+    # To-do destroy scores with this data.
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/scan/<string:uuid>/score')

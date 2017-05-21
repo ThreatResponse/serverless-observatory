@@ -10,7 +10,12 @@ class Scan(object):
     """Return all of the scans and scoring statuses."""
     def __init__(self, user):
         self.user = user
-        self.dynamo_scans = aws.connect_dynamo(table_name='observatory_scans')
+        self.dynamo_scans = aws.connect_dynamo(
+            table_name='observatory_scans'
+        )
+        self.dynamo_scores = aws.connect_dynamo(
+            table_name='observatory_scores'
+        )
 
     def find_scans_by_uid(self):
         fe = Key('user_id').eq(self.user.user_id)
@@ -35,8 +40,17 @@ class Scan(object):
         )
         return response['Item']
 
+    def find_score_by_key(self, uuid):
+        response = self.dynamo_scores.get_item(
+            Key={
+                'uuid': uuid
+            }
+        )
+        return response['Item']
+
     def add_friendly_timestamp(self, scan):
         pass
+
 
 class User(object):
 
