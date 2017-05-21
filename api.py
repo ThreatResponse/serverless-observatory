@@ -1,8 +1,8 @@
 """Class the governs all showdown-api operations."""
 import aws
-import json
 import user
 import uuid
+
 
 class Profiler(object):
     def __init__(self, api_key):

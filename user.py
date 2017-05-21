@@ -1,8 +1,9 @@
 """ Governs crud operations around users and data. """
 import random
 import aws
-from hashids import Hashids
+
 from boto3.dynamodb.conditions import Key
+from hashids import Hashids
 
 
 class Scan(object):
@@ -25,6 +26,17 @@ class Scan(object):
             scans.append(i)
 
         return scans
+
+    def find_scan_by_key(self, uuid):
+        response = self.dynamo_scans.get_item(
+            Key={
+                'uuid': uuid
+            }
+        )
+        return response['Item']
+
+    def add_friendly_timestamp(self, scan):
+        pass
 
 class User(object):
 

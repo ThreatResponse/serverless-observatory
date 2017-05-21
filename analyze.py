@@ -1,4 +1,5 @@
 """Takes a scan with the profile and analyzes it to score."""
+import aws
 import json
 
 
@@ -14,16 +15,52 @@ class ScoredTest(object):
         self.unknown_message = """
             This could not be evaluated in the run time.
         """
+        self.dynamo_scans = aws.connect_dynamo(
+            table_name='observatory_scans'
+        )
+
+        self.dynamo_scores = aws.connect_dynamo(
+            table_name='observatory_scores'
+        )
 
     def run(self):
         """Main map table of items to score."""
-        scores = {
-            "check_temp_location_supports_write":
-            self.check_temp_location_supports_write,
-            "check_internet_egress":
-            self.check_internet_egress
-        }
-        return self.make_result_dict(scores)
+        scan_status = self.scan.get('scored', False)
+        if scan_status is False:
+            scores = {
+                "check_temp_location_supports_write":
+                self.check_temp_location_supports_write,
+                "check_internet_egress":
+                self.check_internet_egress
+            }
+
+            results = self.make_result_dict(scores)
+            results['uuid'] = self.scan['uuid']
+            # Store the score record in dynamodb
+            self.__store(results)
+            self.__marked_scored()
+
+            return results
+        else:
+            return None
+
+    def __store(self, scores):
+        return self.dynamo_scores.put_item(
+            Item=scores
+        )
+
+    def __marked_scored(self):
+        return self.dynamo_scans.update_item(
+            Key={
+                'uuid': self.scan['uuid']
+            },
+            AttributeUpdates={
+                'scored': {
+                    'Value': True,
+                    'Action': 'PUT'
+                }
+            }
+        )
 
     def make_result_dict(self, d):
         """Create dictionary of results.

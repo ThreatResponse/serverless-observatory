@@ -1,6 +1,6 @@
 $(document).ready(function(){
     'use strict';
-
+    
     // Toggle user menu
     $('.menu').click(function() {
         $('.user-menu').toggle();
@@ -26,4 +26,5 @@ $(document).ready(function(){
         $.post( "/api/key", { rotate: true } );
         location.reload();
     });
+
 });

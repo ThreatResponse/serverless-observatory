@@ -3,6 +3,7 @@ import grade
 
 def test_grade_object():
     good_score = {
+                'uuid': '123761238yhfdjsbfasd9f0nvdf',
                 'foo_check': {
                     'check_name': 'foo',
                     'score': 5,
@@ -26,6 +27,7 @@ def test_grade_object():
 
 def test_grade_rounding():
     good_score = {
+                'uuid': '123761238yhfdjsbfasd9f0nvdf',
                 'foo_check': {
                     'check_name': 'foo',
                     'score': 5,

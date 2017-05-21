@@ -1,4 +1,6 @@
 import api
+import analyze
+import grade
 import auth
 import config
 import json
@@ -7,7 +9,7 @@ import os
 import user
 
 from flask import (
-    Flask, render_template, jsonify, redirect, session, request
+    Flask, render_template, jsonify, redirect, session, request, url_for
 )
 
 from flask_assets import Environment, Bundle
@@ -98,12 +100,35 @@ def signout():
     return render_template('signout.html')
 
 
+@app.route('/scan/<string:uuid>')
+@oidc.oidc_auth
+def get_scan(uuid):
+    pass
+
+
+@app.route('/scan/<string:uuid>/delete')
+@oidc.oidc_auth
+def delete_scan(uuid):
+    u = user.User(session['userinfo'])
+    p = api.Profiler(api_key=u.api_key)
+    p.destroy_profile(uuid)
+
+
+@app.route('/scan/<string:uuid>/score')
+@oidc.oidc_auth
+def score_scan(uuid):
+    u = user.User(session['userinfo'])
+    s = user.Scan(u).find_scan_by_key(uuid)
+    a = analyze.ScoredTest(scan=s)
+    a.run()
+    return redirect(url_for('dashboard'))
+
 # API Routes for serverless object storage
 @app.route('/api/profile', methods=['POST'])
 def profile_api():
     """Take a post to the profile, authenticate, and store appropriately."""
     if request.method == 'POST':
-#        try:
+#       try:
         api_key = request.headers['authorization'].split(' ')[1]
         profiler = api.Profiler(api_key)
         profiler.store_profile(request.json)
@@ -130,7 +155,6 @@ def api_key():
             return json.dumps({'success': False}),
             500,
             {'ContentType': 'application/json'}
-
 
 if __name__ == '__main__':
     app.run()

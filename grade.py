@@ -46,9 +46,9 @@ class Grade(object):
         possible_points = 0
 
         for k, v in scored_test.iteritems():
-            score = score + v['score']
-            possible_points = possible_points + v['score_possible']
-
+            if k is not 'uuid':
+                score = score + v['score']
+                possible_points = possible_points + v['score_possible']
 
         percentage_complete = (
             int(

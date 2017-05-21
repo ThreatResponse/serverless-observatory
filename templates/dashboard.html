@@ -39,12 +39,45 @@
 
 {% block content %}
   <h2> Welcome {{ user.name }} to your serverless observatory dashboard. </h2>
-  <div id="app-grid" class="mui-row app-grid">
-    {% for scan in user.scans() %}
-      <h1> Scan </h1>
-          {{ scan['timestamp'] }}
+  <div class="mui-row">
+    <h3> Legend </h3>
+    <img class="menu-icon"src="/static/img/information.svg" alt=""></img> Scan Data Available Click for more info.
+    <img class="menu-icon"src="/static/img/score.svg" alt=""></img> Scan Data Unavailable Click to Score
+    <img class="menu-icon"src="/static/img/delete_forever.svg" alt=""></img> Remove Records Pertaining to Scan
+  </div>
+  <div id="dashboard-grid" class="mui-row">
+    <div class="table-responsive">
+       <table class="table">
+         <thead class="thead-inverse">
+           <tr>
+             <th>Scan ID</th>
+             <th>Sandbox</th>
+             <th>Date</th>
+             <th>Scored</th>
+             <th>Delete</th>
+           </tr>
+         </thead>
+         <tbody>
+           {% for scan in user.scans() %}
+             <tr>
+               <td>{{ scan['uuid'] }}</td>
+               <td>{{ scan['sandbox'] }}</td>
+               <td>{{ scan['timestamp'] }}</td>
+               {% if scan['scored'] == True %}
+                <td><a href="/scan/{{ scan['uuid'] }}"><img class="menu-icon"src="/static/img/information.svg" alt="scan-info-{{ scan['uuid'] }}"></a></td>
+               {% else %}
+                <td><a href="/scan/{{ scan['uuid'] }}"/score><img class="menu-icon"src="/static/img/score.svg" alt="generate-score-for-{{ scan['uuid'] }}"></a></td>
+               {% endif %}
+               <td>
+                  <a href="/scan/{{ scan['uuid'] }}/delete">
+                    <img class="menu-icon"src="/static/img/delete_forever.svg" alt="delete-scan-{{ scan['uuid'] }}">
+                  </a>
+                </td>
+             </tr>
+           {% endfor %}
+         </tbody>
 
-    {% endfor %}
-
+       </table>
+    </div>
   </div>
 {% endblock %}

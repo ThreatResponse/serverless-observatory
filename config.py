@@ -17,6 +17,7 @@ class Config(object):
     SERVER_NAME = "serverless-observatory.threatresponse.cloud"
     SESSION_COOKIE_HTTPONLY = True
     LOGGER_NAME = "serverless-observatory"
+    TEMPLATES_AUTO_RELOAD = True
 
 
 class ProductionConfig(Config):
@@ -32,7 +33,6 @@ class DevelopmentConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
     SERVER_NAME = "localhost:5000"
-
 
 class TestingConfig(Config):
     TESTING = True
