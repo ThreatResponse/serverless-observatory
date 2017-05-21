@@ -1,8 +1,8 @@
 import api
 import analyze
-import grade
 import auth
 import config
+import grade
 import json
 import logging
 import os
@@ -102,7 +102,7 @@ def signout():
 
 @app.route('/scan/<string:profile_id>')
 @oidc.oidc_auth
-def get_scan(uuid):
+def get_scan(profile_id):
     u = user.User(session['userinfo'])
     s = user.Scan(u).find_score_by_key(profile_id)
     g = grade.Grade().get_grade(s)
@@ -128,22 +128,23 @@ def score_scan(profile_id):
     a.run()
     return redirect(url_for('dashboard'))
 
+
 # API Routes for serverless object storage
 @app.route('/api/profile', methods=['POST'])
 def profile_api():
     """Take a post to the profile, authenticate, and store appropriately."""
     if request.method == 'POST':
-#       try:
-        api_key = request.headers['authorization'].split(' ')[1]
-        profiler = api.Profiler(api_key)
-        profiler.store_profile(request.json)
-        return json.dumps({'success': True}),
-        200,
-        {'ContentType': 'application/json'}
-#        except:
-#            return json.dumps({'success': False}),
-#            500,
-#            {'ContentType': 'application/json'}
+        try:
+            api_key = request.headers['authorization'].split(' ')[1]
+            profiler = api.Profiler(api_key)
+            profiler.store_profile(request.json)
+            return json.dumps({'success': True}),
+            200,
+            {'ContentType': 'application/json'}
+        except:
+            return json.dumps({'success': False}),
+            500,
+            {'ContentType': 'application/json'}
 
 
 @app.route('/api/key', methods=['POST'])

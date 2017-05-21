@@ -21,7 +21,6 @@ class Scan(object):
         fe = Key('user_id').eq(self.user.user_id)
 
         response = self.dynamo_scans.scan(
-            IndexName='user_id-index',
             FilterExpression=fe,
             Select='ALL_ATTRIBUTES'
         )
@@ -89,7 +88,6 @@ class User(object):
         If no user is found create them.
         """
         search = self.__find_by_uid()
-        print(search)
         if 'Item' in search:
             return search['Item']
         else:
@@ -102,7 +100,6 @@ class User(object):
         Search for a user in dynamo.
         """
         search = self.__find_by_uid()
-        print(search)
         if 'Item' in search:
             return search['Item']
         else:
@@ -135,6 +132,7 @@ class User(object):
             Item={
                 'user_id': self.user_id,
                 'email': self.email,
+                'name': self.name,
                 'api_key': self.__generate_api_key(),
                 'disabled': False
 
