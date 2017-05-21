@@ -14,5 +14,5 @@ def locate_user_by_key(api_key, table_resource):
     response = table_resource.scan(
         FilterExpression=Attr('api_key').eq(api_key)
     )
-    items = response['Items']
-    return items[0]
+
+    return response['Items'][0]

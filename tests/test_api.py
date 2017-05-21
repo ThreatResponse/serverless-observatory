@@ -10,8 +10,9 @@ import user
 fake = Factory.create()
 
 MOCK_NEW_USER = {
-    'user_id': '3141592654',
-    'email': 'foo@bar.com'
+        'name': 'Foo McBarington',
+        'user_id': '3141592654',
+        'email': 'foo@bar.com'
 }
 
 MOCK_SCAN = {

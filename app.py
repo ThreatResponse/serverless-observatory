@@ -100,30 +100,30 @@ def signout():
     return render_template('signout.html')
 
 
-@app.route('/scan/<string:uuid>')
+@app.route('/scan/<string:profile_id>')
 @oidc.oidc_auth
 def get_scan(uuid):
     u = user.User(session['userinfo'])
-    s = user.Scan(u).find_score_by_key(uuid)
+    s = user.Scan(u).find_score_by_key(profile_id)
     g = grade.Grade().get_grade(s)
     return render_template('report.html', user=u, score=s, grade=g)
 
 
-@app.route('/scan/<string:uuid>/delete')
+@app.route('/scan/<string:profile_id>/delete')
 @oidc.oidc_auth
-def delete_scan(uuid):
+def delete_scan(profile_id):
     u = user.User(session['userinfo'])
-    p = api.Profiler(api_key=u.api_key)
-    p.destroy_profile(uuid)
+    p = api.Profiler(u.api_key())
+    p.destroy_profile(profile_id)
     # To-do destroy scores with this data.
     return redirect(url_for('dashboard'))
 
 
-@app.route('/scan/<string:uuid>/score')
+@app.route('/scan/<string:profile_id>/score')
 @oidc.oidc_auth
-def score_scan(uuid):
+def score_scan(profile_id):
     u = user.User(session['userinfo'])
-    s = user.Scan(u).find_scan_by_key(uuid)
+    s = user.Scan(u).find_scan_by_key(profile_id)
     a = analyze.ScoredTest(scan=s)
     a.run()
     return redirect(url_for('dashboard'))

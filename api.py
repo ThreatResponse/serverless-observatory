@@ -38,19 +38,18 @@ class Profiler(object):
 
         # Store the record in dynamodb
         try:
-            response = self.dynamo.put_item(
+            self.dynamo.put_item(
                 Item=profile
             )
-            print(response)
             return profile['uuid']
         except Exception as e:
             raise(e)
             return None
 
-    def destroy_profile(self, profile_id):
+    def destroy_profile(self, uuid):
         response = self.dynamo.delete_item(
             Key={
-                'uuid': profile_id
+                'uuid': uuid
             }
         )
         return response
