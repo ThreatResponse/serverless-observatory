@@ -1,12 +1,13 @@
 """Class the governs all showdown-api operations."""
-import user
 import aws
-
+import json
+import user
+import uuid
 
 class Profiler(object):
     def __init__(self, api_key):
         self.api_key = api_key
-        self.dynamo = aws.connect_dynamo(table_name='observatory_users')
+        self.dynamo = aws.connect_dynamo(table_name='observatory_scans')
         self.authenticated = self.__authenticate()
 
     def __authenticate(self):
@@ -14,23 +15,41 @@ class Profiler(object):
 
         # Search dynamo for user having api_key\
         api_key = APIKey(self.api_key)
-        u = api_key.locate_user()
+        self.user = api_key.locate_user()
 
-        if u['api_key'] == self.api_key and u['disabled'] is False:
+        if self.user['disabled'] is True:
+            return False
+        elif self.user['api_key'] == self.api_key:
             # If key present and not disabled return true
             return True
         else:
             # If key not present or disabled return false
             return False
 
-    def store_profile(self, profile):
+    def __uuid(self):
+        return uuid.uuid4().hex
 
+    def store_profile(self, profile):
         # Ingest the output of the serverless profiler as json
 
-        # Sanitize the json safely
+        # Add a UUID to the json object
+        profile['uuid'] = self.__uuid()
+        profile['user_id'] = self.user['user_id']
 
         # Store the record in dynamodb
-        pass
+        self.dynamo.put_item(
+            Item=profile
+        )
+
+        return profile['uuid']
+
+    def destroy_profile(self, profile_id):
+        response = self.dynamo.delete_item(
+            Key={
+                'uuid': profile_id
+            }
+        )
+        return response
 
 
 """First class object to run DynamoDB scans to correlate user."""

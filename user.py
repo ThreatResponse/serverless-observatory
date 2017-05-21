@@ -92,7 +92,6 @@ class User(object):
                 'user_id': self.user_id
             }
         )
-        print response
         return response
 
     def __generate_api_key(self):
