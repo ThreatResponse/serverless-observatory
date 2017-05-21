@@ -32,19 +32,34 @@
 
 {% block user_menu %}
   <div class="user-menu">
-    <a href="/settings" target="_blank"><span>Settings</span> <img class="menu-icon"src="/static/img/settings.svg" alt="Settings"></a>
+    <a href="settings" target="_blank"><span>Settings</span> <img class="menu-icon"src="/static/img/settings.svg" alt="Settings"></a>
     <a href="/logout"><span>Logout</span> <img class="menu-icon"src="/static/img/logout.svg" alt="Logout"></a>
   </div>
 {% endblock %}
 
 {% block content %}
-  <h2> Welcome {{ user.name }} to your serverless observatory dashboard. </h2>
-  <div id="app-grid" class="mui-row app-grid">
-    {% for scan in user.scans() %}
-      <h1> Scan </h1>
-          {{ scan['timestamp'] }}
 
-    {% endfor %}
-
-  </div>
+    <div id="app-grid" class="mui-row app-grid">
+      <div class="mui--text-center app-logo">
+        <h1> Settings </h1>
+      </div>
+    </div>
+    <div id="app-grid" class="mui-row app-grid">
+      <br> </br>
+        <h2> User ID : {{ user.user_id }} </h2>
+      <br> </br>
+    </div>
+    <div id="app-grid" class="mui-row app-grid">
+      <h2> User E-Mail : {{ user.email }} </h2>
+      <br> </br>
+    </div>
+    <div id="app-grid" class="mui-row app-grid">
+      <h2> API Key : {{ user.api_key() }}</h2>
+        <div class="api-key">
+         <a href="#">
+           <img src="static/img/rotate.svg" alt="rotate-api-key"></img>
+         </a>
+       </div>
+      <br> </br>
+    </div>
 {% endblock %}

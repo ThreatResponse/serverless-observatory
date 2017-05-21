@@ -46,7 +46,7 @@ class ScoredTest(object):
             :Parse the json to determine persistence via warmness.
         """
         check_name = "Temp location supports write."
-        modifier = 5  # TBD what the severities will be.
+        points = 5  # TBD what the severities will be.
         fail_messaging = """
             The sandbox allows writing data to the /tmp directory.  This could
             potentially allow an attacker to persist in the environment by
@@ -62,23 +62,26 @@ class ScoredTest(object):
         """
 
         if self.scan['tmp_rw'] is True:
-            modifier = (modifier * -1)
+            modifier = (points * -1)
             messaging = fail_messaging
         elif self.scan['tmp_rw'] is False:
             messaging = success_messaging
-            modifier = (modifier * 1)
+            modifier = (points * 1)
         else:
             messaging = self.unknown_message
             modifier = 0
 
-        return {'check': check_name, 'score': modifier, 'message': messaging}
+        return {
+            'check': check_name, 'score': modifier,
+            'score_possible': points, 'message': messaging
+        }
 
     def check_internet_egress(self):
         """
             :Parse the json to determine whether we can reach arbitrary sites.
         """
         check_name = "Internet egress to world possible."
-        modifier = 5  # TBD what the severities will be.
+        points = 5  # TBD what the severities will be.
         fail_messaging = """
             The sandbox allows egress to the internet. A stealthy attacker
             could use this to exfiltrate data or call for other arbitrary
@@ -92,13 +95,16 @@ class ScoredTest(object):
         """
 
         if self.scan['internet_egress'] is True:
-            modifier = (modifier * -1)
+            modifier = (points * -1)
             messaging = fail_messaging
         elif self.scan['internet_egress'] is False:
             messaging = success_messaging
-            modifier = (modifier * 1)
+            modifier = (points * 1)
         else:
             messaging = self.unknown_message
             modifier = 0
 
-        return {'check': check_name, 'score': modifier, 'message': messaging}
+        return {
+            'check': check_name, 'score': modifier,
+            'score_possible': points, 'message': messaging
+        }

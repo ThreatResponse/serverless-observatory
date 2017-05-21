@@ -2,14 +2,44 @@
 import random
 import aws
 from hashids import Hashids
+from boto3.dynamodb.conditions import Key
 
+
+class Scan(object):
+    """Return all of the scans and scoring statuses."""
+    def __init__(self, user):
+        self.user = user
+        self.dynamo_scans = aws.connect_dynamo(table_name='observatory_scans')
+
+    def find_scans_by_uid(self):
+        fe = Key('user_id').eq(self.user.user_id)
+
+        response = self.dynamo_scans.scan(
+            IndexName='user_id-index',
+            FilterExpression=fe,
+            Select='ALL_ATTRIBUTES'
+        )
+
+        scans = []
+        for i in response['Items']:
+            scans.append(i)
+
+        return scans
 
 class User(object):
 
     def __init__(self, userinfo):
         self.user_id = userinfo['user_id']
         self.email = userinfo['email']
+        self.name = userinfo['name']
         self.dynamo = aws.connect_dynamo(table_name='observatory_users')
+
+    def scans(self):
+        return Scan(self).find_scans_by_uid()
+
+    def api_key(self):
+        """Return the primary api key for a user."""
+        return self.find_or_create_by()['api_key']
 
     def rotate_api_key(self):
         """Updates users api by replacing."""

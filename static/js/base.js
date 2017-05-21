@@ -1,6 +1,6 @@
 $(document).ready(function(){
     'use strict';
-    
+
     // Toggle user menu
     $('.menu').click(function() {
         $('.user-menu').toggle();
@@ -21,5 +21,9 @@ $(document).ready(function(){
     $('.content').click(function() {
         $('.user-menu').hide();
         $('.menu').removeClass('enabled');
+    });
+    $('.api-key').click(function() {
+        $.post( "/api/key", { rotate: true } );
+        location.reload();
     });
 });

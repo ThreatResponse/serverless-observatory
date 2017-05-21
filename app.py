@@ -1,10 +1,14 @@
+import api
 import auth
 import config
+import json
 import logging
 import os
 import user
 
-from flask import (Flask, render_template, jsonify, redirect, session)
+from flask import (
+    Flask, render_template, jsonify, redirect, session, request
+)
 
 from flask_assets import Environment, Bundle
 
@@ -50,6 +54,16 @@ def dashboard():
     )
 
 
+@app.route('/settings')
+@oidc.oidc_auth
+def settings():
+    u = user.User(session['userinfo'])
+    return render_template(
+        'settings.html',
+        user=u
+    )
+
+
 @app.route('/info')
 @oidc.oidc_auth
 def info():
@@ -82,6 +96,40 @@ def logout():
 @app.route('/signout.html')
 def signout():
     return render_template('signout.html')
+
+
+# API Routes for serverless object storage
+@app.route('/api/profile', methods=['POST'])
+def profile_api():
+    """Take a post to the profile, authenticate, and store appropriately."""
+    if request.method == 'POST':
+#        try:
+        api_key = request.headers['authorization'].split(' ')[1]
+        profiler = api.Profiler(api_key)
+        profiler.store_profile(request.json)
+        return json.dumps({'success': True}),
+        200,
+        {'ContentType': 'application/json'}
+#        except:
+#            return json.dumps({'success': False}),
+#            500,
+#            {'ContentType': 'application/json'}
+
+
+@app.route('/api/key', methods=['POST'])
+@oidc.oidc_auth
+def api_key():
+    if request.method == 'POST':
+        try:
+            u = user.User(session['userinfo'])
+            u.rotate_api_key()
+            return json.dumps({'success': True}),
+            200,
+            {'ContentType': 'application/json'}
+        except:
+            return json.dumps({'success': False}),
+            500,
+            {'ContentType': 'application/json'}
 
 
 if __name__ == '__main__':

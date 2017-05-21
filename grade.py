@@ -1,4 +1,5 @@
 """Grading logic modeled after April King's Mozilla Web Observatory."""
+from __future__ import division
 
 
 class Grade(object):
@@ -40,7 +41,21 @@ class Grade(object):
         return {'score': total_score, 'grade': grade}
 
     def _total_score(self, scored_test):
+        """Returns total score as a percentage."""
         score = 0
+        possible_points = 0
+
         for k, v in scored_test.iteritems():
             score = score + v['score']
-        return score
+            possible_points = possible_points + v['score_possible']
+
+
+        percentage_complete = (
+            int(
+                round(
+                    float(int(score) / int(possible_points) * 100)
+                )
+            )
+        )
+
+        return percentage_complete

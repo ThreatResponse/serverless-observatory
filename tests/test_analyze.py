@@ -32,6 +32,15 @@ def test_reporting_temp_rw():
     assert res['score'] is -5
 
 
+def test_reporting_internet_egress():
+    f = "{\"internet_egress\": true}"
+    a = analyze.ScoredTest(f)
+    a.validate()
+    res = a.check_internet_egress()
+    assert res is not None
+    assert res['score'] is -5
+
+
 def test_full_eval():
     f = open('tests/sample.json', 'r')
     f = f.read()
@@ -40,4 +49,4 @@ def test_full_eval():
     res = a.run()
     assert 'check_temp_location_supports_write' in res.keys()
     assert 'score' in res['check_temp_location_supports_write'].keys()
-    assert 'score' in res['check_temp_location_supports_write'].keys()
+    assert 'score' in res['check_internet_egress'].keys()
