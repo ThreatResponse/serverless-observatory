@@ -1,7 +1,8 @@
-import os
-import config
 import auth
+import config
 import logging
+import os
+import user
 
 from flask import (Flask, render_template, jsonify, redirect, session)
 
@@ -33,7 +34,6 @@ logging.getLogger("werkzeug").addHandler(handler)
 
 
 @app.route('/')
-@oidc.oidc_auth
 def index():
     return render_template(
         'home.html'
@@ -43,8 +43,10 @@ def index():
 @app.route('/dashboard')
 @oidc.oidc_auth
 def dashboard():
+    u = user.User(session['userinfo'])
     return render_template(
-        'home.html'
+        'dashboard.html',
+        user=u
     )
 
 

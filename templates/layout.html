@@ -43,8 +43,9 @@
       </div>
     </div>
 
-    {% block user_menu %}{% endblock %}
 
+    {% block user_menu %}{% endblock %}
+    
     {% block footer %}
       <footer>
         <div class="mui-container mui--text-center">
@@ -62,6 +63,5 @@
     {% assets "js_all" %}
       <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
-    {% block extra_js %}{% endblock %}
   </body>
 </html>
