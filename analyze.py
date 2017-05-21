@@ -19,7 +19,9 @@ class ScoredTest(object):
         """Main map table of items to score."""
         scores = {
             "check_temp_location_supports_write":
-            self.check_temp_location_supports_write
+            self.check_temp_location_supports_write,
+            "check_internet_egress":
+            self.check_internet_egress
         }
         return self.make_result_dict(scores)
 
@@ -63,6 +65,36 @@ class ScoredTest(object):
             modifier = (modifier * -1)
             messaging = fail_messaging
         elif self.scan['tmp_rw'] is False:
+            messaging = success_messaging
+            modifier = (modifier * 1)
+        else:
+            messaging = self.unknown_message
+            modifier = 0
+
+        return {'check': check_name, 'score': modifier, 'message': messaging}
+
+    def check_internet_egress(self):
+        """
+            :Parse the json to determine whether we can reach arbitrary sites.
+        """
+        check_name = "Internet egress to world possible."
+        modifier = 5  # TBD what the severities will be.
+        fail_messaging = """
+            The sandbox allows egress to the internet. A stealthy attacker
+            could use this to exfiltrate data or call for other arbitrary
+            payloads.
+        """
+
+        success_messaging = """
+            The sandbox does not support egress to the internet making data
+            exfiltration less likely but not impossible.  Exfil may still
+            be possible through side channel attacks.
+        """
+
+        if self.scan['internet_egress'] is True:
+            modifier = (modifier * -1)
+            messaging = fail_messaging
+        elif self.scan['internet_egress'] is False:
             messaging = success_messaging
             modifier = (modifier * 1)
         else:
