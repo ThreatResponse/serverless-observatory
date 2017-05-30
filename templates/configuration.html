@@ -44,59 +44,75 @@
 
 {% block content %}
 
-    <div id="app-grid" class="mui-row app-grid">
-      <div class="mui--text-center app-logo">
-        <h1> Settings </h1>
-      </div>
+{% if form == 'new' %}
+  <h3> Create New Configuration </h3>
+  <form class="mui-form" method="POST" action="/configuration/new" >
+    <legend>Environment</legend>
+    <div class="mui-textfield">
+      <input placeholder="Environment" name="environment" list="environments">
+      <datalist id="environments">
+        <option value="AWS Lambda">
+        <option value="Docker">
+        <option value="Azure Functions">
+        <option value="Google Compute Functions">
+        <option value="Webtask">
+        <option value="TaskCluster">
+        <option value="Other">
+      </datalist>
     </div>
-    <div id="app-grid" class="mui-row app-grid">
-      <br> </br>
-        <h2> User ID : {{ user.user_id }} </h2>
-      <br> </br>
+    <legend>Tennancy</legend>
+    <div class="mui-textfield">
+      <input placeholder="Tennancy" name="tennancy" list="tennancy">
+      <datalist id="tennancy">
+        <option value="Dedicated">
+        <option value="Pay as You Go">
+        <option value="Unknown">
+      </datalist>
     </div>
-    <div id="app-grid" class="mui-row app-grid">
-      <h2> User E-Mail : {{ user.email }} </h2>
-      <br> </br>
+    <legend>Additional Info</legend>
+    <div class="mui-textfield">
+      <textarea placeholder="Notes" name="notes"></textarea>
     </div>
+    <button type="submit" class="mui-btn mui-btn--raised">Create</button>
+  </form>
 
-    <hr> </hr>
-    <h3> Configurations </h3>
-    <p> Active Profiler API Keys and Configuration Information </p>
-    <a href="/configuration/new"> <button class="mui-btn mui-btn--primary">Add Config</button></a>
-    {% if configs == [] %}
-     You currently have no configs or api_keys.  Would you like to
-     add one?
-    {% else %}
-    <div class="table-responsive">
-       <table class="table">
-         <thead class="thead-inverse">
-           <tr>
-             <th>Configuration Id</th>
-             <th>Environment</th>
-             <th>Tennancy</th>
-             <th>API_Key</th>
-             <th>Notes</th>
-             <th>Disable</th>
-             <th>Rotate Key</th>
-           </tr>
-         </thead>
-         <tbody>
-         {% for c in configs %}
-             <tr>
-               <td>{{ c['uuid'] }}</td>
-               <td>{{ c['config']['environment'] }}</td>
-               <td>{{ c['config']['tennancy'] }}</td>
-               <td>{{ c['api_key'] }}</td>
-               <td>{{ c['config']['notes'] }}</td>
-               <td>TBD</td>
-               <td>TBD</td>
-             </tr>
-         {% endfor %}
+{% endif %}
 
-         </tbody>
-
-       </table>
-     {% endif %}
+{% if form == 'edit' %}
+  <h3> Editing Configuration </h3>
+  <form class="mui-form" method="POST" action="/configuration/{{ config_id }}" >
+    <legend>Environment</legend>
+    <div class="mui-textfield">
+      <input placeholder="Environment" name="environment" value="{{ config['environment'] }}" list="environments">
+      <datalist id="environments">
+        <option value="AWS Lambda">
+        <option value="Docker">
+        <option value="Azure Functions">
+        <option value="Google Compute Functions">
+        <option value="Webtask">
+        <option value="TaskCluster">
+        <option value="Other">
+      </datalist>
     </div>
+    <legend>Tennancy</legend>
+    <div class="mui-textfield">
+      <input placeholder="Tennancy" name="tennancy" value="{{ config['tennancy'] }}" list="tennancy">
+      <datalist id="tennancy">
+        <option value="Dedicated">
+        <option value="Pay as You Go">
+        <option value="Unknown">
+      </datalist>
+    </div>
+    <legend>Additional Info</legend>
+    <div class="mui-textfield">
+      <textarea placeholder="Notes" name="notes" value="{{ config['notes'] }}">{{ config['notes'] }}</textarea>
+    </div>
+    <button type="submit" class="mui-btn mui-btn--raised">Save</button>
+  </form>
+
+{% endif %}
+
+
+
 
 {% endblock %}

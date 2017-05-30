@@ -16,3 +16,12 @@ def locate_user_by_key(api_key, table_resource):
     )
 
     return response['Items'][0]
+
+
+def locate_config_by_key(api_key, table_resource):
+    table_resource = table_resource
+    response = table_resource.scan(
+        FilterExpression=Attr('api_key').eq(api_key)
+    )
+
+    return response['Items'][0]

@@ -6,7 +6,9 @@ import grade
 import json
 import logging
 import os
+import observatory_configuration
 import user
+
 
 from flask import (
     Flask, render_template, jsonify, redirect, session, request, url_for
@@ -60,9 +62,61 @@ def dashboard():
 @oidc.oidc_auth
 def settings():
     u = user.User(session['userinfo'])
+    s = observatory_configuration.ScanConfig(u).find_configs_for_user()
+    print(s)
     return render_template(
         'settings.html',
-        user=u
+        user=u, configs=s
+    )
+
+
+@app.route('/configuration/new', methods=['GET', 'POST'])
+@oidc.oidc_auth
+def create_configuration():
+    u = user.User(session['userinfo'])
+    form = 'new'
+    if request.method == 'POST':
+        config = {
+            'environment': request.form.get('environment', 'unknown'),
+            'tennancy': request.form.get('tennancy', 'unknown'),
+            'notes': request.form.get('notes', "No additional infomation.")
+        }
+        o = observatory_configuration.ScanConfig(user=u)
+        o.create_configuration(configuration_information=config)
+        return redirect('/settings')
+    return render_template(
+        'configuration.html',
+        user=u, form=form
+    )
+
+@app.route('/configuration/<config_id>', methods=['GET', 'POST'])
+@oidc.oidc_auth
+def edit_configuration(config_id):
+    u = user.User(session['userinfo'])
+    o = observatory_configuration.ScanConfig(user=u).find_config_by_id(
+        config_id=config_id
+    )
+
+    form = 'edit'
+
+    if request.method == 'POST':
+        config = {
+            'uuid': o['uuid'],
+            'user_id': u.user_id,
+            'api_key': o['api_key'],
+            'config': {
+                'environment': request.form.get('environment', 'unknown'),
+                'tennancy': request.form.get('tennancy', 'unknown'),
+                'notes': request.form.get('notes', "No additional infomation.")
+            },
+            'disabled': o['disabled']
+        }
+        o = observatory_configuration.ScanConfig(user=u)
+        o.update_configuration(config=config)
+        return redirect('/settings')
+    return render_template(
+        'configuration.html',
+        user=u, form=form, config=o['config'], config_id=config_id
     )
 
 
@@ -112,8 +166,7 @@ def get_scan(profile_id):
 @app.route('/scan/<string:profile_id>/delete')
 @oidc.oidc_auth
 def delete_scan(profile_id):
-    u = user.User(session['userinfo'])
-    p = api.Profiler(u.api_key())
+    p = api.Profiler()
     p.destroy_profile(profile_id)
     # To-do destroy scores with this data.
     return redirect(url_for('dashboard'))
@@ -134,17 +187,18 @@ def score_scan(profile_id):
 def profile_api():
     """Take a post to the profile, authenticate, and store appropriately."""
     if request.method == 'POST':
-        try:
-            api_key = request.headers['authorization'].split(' ')[1]
-            profiler = api.Profiler(api_key)
-            profiler.store_profile(request.json)
-            return json.dumps({'success': True}),
-            200,
-            {'ContentType': 'application/json'}
-        except:
-            return json.dumps({'success': False}),
-            500,
-            {'ContentType': 'application/json'}
+        #try:
+        api_key = request.headers['authorization'].split(' ')[1]
+        profiler = api.Profiler(api_key)
+        print request.json
+        profiler.store_profile(request.json)
+        return json.dumps({'success': True}),
+        200,
+        {'ContentType': 'application/json'}
+        #except:
+        #    return json.dumps({'success': False}),
+        #    500,
+        #    {'ContentType': 'application/json'}
 
 
 @app.route('/api/key', methods=['POST'])
