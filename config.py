@@ -21,7 +21,9 @@ class Config(object):
 
 
 class ProductionConfig(Config):
-    DEBUG = False
+    SERVER_NAME = "serverless-observatory.threatresponse.cloud"
+    PREFERRED_URL_SCHEME = 'https'
+    DEBUG = True
 
 
 class StagingConfig(Config):

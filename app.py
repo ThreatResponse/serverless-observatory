@@ -26,9 +26,12 @@ sass = Bundle('css/base.scss', filters='scss')
 css = Bundle(sass, filters='cssmin', output='css/gen/all.css')
 assets.register('css_all', css)
 
-if os.environ.get('environment') is not 'Production':
+app.config.from_object(config.Config())
+
+if os.environ.get('environment') != 'production':
     app.config.from_object(config.DevelopmentConfig())
 else:
+    print("Loading production config")
     app.config.from_object(config.ProductionConfig())
 
 # Initializes Auth0 Support and loads decorator.
@@ -40,6 +43,7 @@ oidc = authentication.auth(app)
 handler = logging.StreamHandler()
 logging.getLogger("werkzeug").addHandler(handler)
 
+print(app.config)
 
 @app.route('/')
 def index():
@@ -218,4 +222,4 @@ def api_key():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
